@@ -4,7 +4,7 @@
   "description": "## Objective",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "db:reset": "psql -f ./db/setup_db.sql"
   },
   "repository": {
     "type": "git",
