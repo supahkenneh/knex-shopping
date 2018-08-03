@@ -34,6 +34,13 @@ CREATE TABLE cart (
   updated_at TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
+CREATE TABLE purchases (
+  id serial NOT NULL PRIMARY KEY,
+  user_id integer REFERENCES users(id),
+  products_id integer REFERENCES products(id),
+  created_at  TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
 INSERT INTO users (email, password, created_at, updated_at) 
 VALUES (
   'whatever@gmail.com',
@@ -73,6 +80,15 @@ VALUES (
   1,
   2,
   default,
+  default
+)
+RETURNING *;
+
+INSERT INTO purchases
+VALUES (
+  default,
+  1,
+  2,
   default
 )
 RETURNING *;

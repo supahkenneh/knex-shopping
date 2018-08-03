@@ -7,7 +7,7 @@ router.get('/:user_id', (req, res) => {
   db.raw('SELECT email, password FROM users WHERE id = ?', [id])
     .then(user => {
       if (!user || !user.rowCount) {
-        res.status(400).json({ 'message': 'User not found'});
+        res.status(400).json({ 'message': 'User not found' });
       }
       res.json(user.rows[0]);
     })
@@ -42,7 +42,7 @@ router.post('/register', (req, res) => {
       if (!result || !result.rowCount) {
         return db.raw('INSERT INTO users (email, password) VALUES (? , ?) RETURNING *', [data.email, data.password])
       } else {
-        return res.status(400).json({ "message" : "User already exists" });
+        return res.status(400).json({ "message": "User already exists" });
       }
     })
     .then(newUser => {
@@ -87,5 +87,19 @@ router.delete('/:user_id', (req, res) => {
     })
     .catch(err => console.log(err));
 });
+
+router.get('/:user_id/purchases/:products_id', (req, res) => {
+  const userId = req.params.user_id;
+  const productId = req.params.products_id;
+  db.raw('SELECT * FROM purchases INNER JOIN products ON purchases.products_id = products.id WHERE user_id = ?', [userId])
+  .then(result => {
+    const inventory = result.rows[0].inventory - 1;
+    return db.raw('UPDATE products SET inventory = ? WHERE id = ? RETURNING *', [inventory, productId]);
+  })
+  .then(result => {
+    return res.json(result.rows[0]);
+  })
+  .catch(err => console.log(err));
+})
 
 module.exports = router;
