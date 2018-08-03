@@ -63,4 +63,22 @@ router.put('/:product_id', (req, res) => {
   .catch(err => console.log(err));
 });
 
+router.delete('/:product_id', (req, res) => {
+  const id = req.params.product_id;
+  db.raw('SELECT * FROM products WHERE id = ?', [id])
+  .then(result => {
+    if (!result || !result.rowCount) {
+      return res.status(404).json({'message': `Product ID: ${id} not found`});
+    }
+    return result;
+  })
+  .then(result => {
+    return db.raw('DELETE FROM products WHERE id = ? RETURNING *', [id]);
+  })
+  .then(result => {
+    return res.json({'message' : `Product ID: ${id} successfully deleted`})
+  })
+  .catch(err => console.log(err));
+});
+
 module.exports = router;
