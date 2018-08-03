@@ -88,18 +88,51 @@ router.delete('/:user_id', (req, res) => {
     .catch(err => console.log(err));
 });
 
+//Stretch Goals
 router.get('/:user_id/purchases/:products_id', (req, res) => {
   const userId = req.params.user_id;
   const productId = req.params.products_id;
-  db.raw('SELECT * FROM purchases INNER JOIN products ON purchases.products_id = products.id WHERE user_id = ?', [userId])
+  return db.raw('SELECT * FROM purchases WHERE user_id = ? AND products_id = ?', [userId, productId])
   .then(result => {
-    const inventory = result.rows[0].inventory - 1;
+    if (!result || !result.rowCount) {
+      return res.status(404).json({'message': 'item or user not found'})
+    }
+    return result;
+  })
+  .then(result => {
+    res.json(result.rows);
+  })
+  .catch(err => console.log(err));
+});
+
+router.post('/:user_id/purchases/:products_id', (req, res) => {
+  const userId = req.params.user_id;
+  const productId = req.params.products_id;
+  return db.raw('SELECT * FROM purchases JOIN products ON purchases.products_id = products.id WHERE user_id = ? AND products_id = ?', [userId, productId])
+  .then(result => {
+    if (!result || !result.rowCount) {
+      return res.status(404).json({'message' : 'item or user not found'})
+    }
+    return result;
+  })
+  .then(result => {
+    let inventory = result.rows[0].inventory;
+    inventory -= 1;
     return db.raw('UPDATE products SET inventory = ? WHERE id = ? RETURNING *', [inventory, productId]);
   })
   .then(result => {
-    return res.json(result.rows[0]);
+    res.json(result.rows[0]);
   })
   .catch(err => console.log(err));
 })
 
+
 module.exports = router;
+//   console.log(result.rows[0].inventory);
+//   let inventory = result.rows[0].inventory;
+//   inventory -= 1;
+//   console.log(inventory);
+//   return db.raw('UPDATE products SET inventory = ? WHERE id = ? RETURNING *', [inventory, productId]);
+// })
+// .then(result => {
+//   return res.json(result.rows[0]);
