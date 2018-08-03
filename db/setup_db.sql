@@ -66,3 +66,13 @@ VALUES (
   default
 )
 RETURNING *;
+
+INSERT INTO cart
+VALUES (
+  default,
+  1,
+  2,
+  default,
+  default
+)
+RETURNING *;
