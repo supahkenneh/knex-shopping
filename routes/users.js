@@ -53,4 +53,21 @@ router.post('/register', (req, res) => {
   .catch(err => console.log(err));
 });
 
+router.put('/:user_id/forgot-password', (req, res) => {
+  const id = req.params.user_id;
+  const pass = req.body.password;
+  db.raw('SELECT password FROM users WHERE id = ?', [id])
+  .then(result => {
+    if(!result || !result.rowCount) {
+      return res.status(404).send('User not found');
+    }
+    return result;
+  })
+  .then(result => {
+    db.raw(`UPDATE users SET password = ? WHERE id = ? RETURNING *`, [pass, id])
+    return res.send('{ "message": "New password created!" }');
+  })
+  .catch(err => console.log(err));
+})
+
 module.exports = router;
