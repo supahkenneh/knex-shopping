@@ -7,7 +7,7 @@ router.get('/:user_id', (req, res) => {
   db.raw('SELECT email, password FROM users WHERE id = ?', [id])
     .then(user => {
       if (!user || !user.rowCount) {
-        res.status(400).send(`{ message: 'User not found'}`);
+        res.status(400).json({ 'message': 'User not found'});
       }
       res.json(user.rows[0]);
     })
@@ -88,6 +88,6 @@ router.delete('/:user_id', (req, res) => {
       return res.json({ "message": `User ID: ${id} successfully deleted` })
     })
     .catch(err => console.log(err));
-})
+});
 
 module.exports = router;

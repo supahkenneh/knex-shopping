@@ -43,3 +43,26 @@ VALUES (
 )
 RETURNING *;
 
+INSERT INTO products
+VALUES (
+  default,
+  'shoes',
+  'for walking',
+  1,
+  32.50,
+  default,
+  default
+)
+RETURNING *;
+
+INSERT INTO products
+VALUES (
+  default,
+  'phone',
+  'for texting',
+  1,
+  1000,
+  default,
+  default
+)
+RETURNING *;
