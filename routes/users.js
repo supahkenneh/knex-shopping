@@ -37,15 +37,13 @@ router.post('/login', (req, res) => {
 
 router.post('/register', (req, res) => {
   const data = req.body;
-  db.raw('SELECT email FROM users WHERE email = ?', [data.email])
+  return db.raw('SELECT email FROM users WHERE email = ?', [data.email])
     .then(result => {
-      if (result.rows[0].email === data.email) {
+      if (!result || !result.rowCount) {
+        return db.raw('INSERT INTO users (email, password) VALUES (? , ?) RETURNING *', [data.email, data.password])
+      } else {
         return res.status(400).json({ "message" : "User already exists" });
       }
-      return result;
-    })
-    .then(result => {
-      return db.raw('INSERT INTO users (email, password) VALUES (? , ?) RETURNING *', [data.email, data.password])
     })
     .then(newUser => {
       return res.json(newUser.rows[0]);
